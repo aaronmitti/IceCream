@@ -32,8 +32,9 @@ public class CreamAsset: Object {
     }
 
     private convenience init?(objectID: String, propName: String, url: URL) {
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        self.init(objectID: objectID, propName: propName, data: data)
+        self.init()
+        self.uniqueFileName = "\(objectID)_\(propName)"
+        save(url: url, to: uniqueFileName)
     }
 
     /// There is an important point that we need to consider:
@@ -52,7 +53,16 @@ public class CreamAsset: Object {
         do {
             try data.write(to: url)
         } catch {
-            print("Error writing avatar to temporary directory: \(error)")
+            print("Error writing asset to directory: \(error)")
+        }
+    }
+  
+    func save(url fromURL: URL, to toPath: String) {
+        let url = CreamAsset.creamAssetDefaultURL().appendingPathComponent(toPath)
+        do {
+            try FileManager.default.copyItem(at: fromURL, to: url)
+        } catch {
+            print("Error writing asset to directory: \(error)")
         }
     }
 
